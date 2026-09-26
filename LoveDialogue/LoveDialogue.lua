@@ -338,17 +338,17 @@ function LoveDialogue:setDialogueState(line)
     self.state.typewriterTimer = 0
     self.state.waitTimer = 0
     self.state.activeChoices = {}
+    self.state.choiceMode = false
+    self.state.pendingChoices = {}
     if line.choices and #line.choices > 0 then
         for _, c in ipairs(line.choices) do
             if not c.condition or Logic.evaluate(c.condition, self.state.variables) then
                 local choiceTxt = Logic.interpolate(c.text, self.state.variables)
                 local cpText, ceff = Parser.parseTextWithTags(choiceTxt)
-                table.insert(self.state.activeChoices, {text=choiceTxt, parsedText=cpText, effects=ceff, target=c.target})
+                table.insert(self.state.pendingChoices, {text=choiceTxt, parsedText=cpText, effects=ceff, target=c.target})
             end
         end
     end
-    self.state.choiceMode = (#self.state.activeChoices > 0)
-    if self.state.choiceMode then self.state.displayedText = self.state.fullText; self.state.selectedChoice = 1 end
     self.state.autoAdvanceTimer = 0
     self.state.waitingForInput = false
     self:triggerPluginEvent("onAfterDialogueSet", line)
@@ -581,6 +581,10 @@ function LoveDialogue:advance()
     elseif self.state.displayedText ~= self.state.fullText then
         self.state.displayedText = self.state.fullText
         self:triggerPluginEvent("onTextSkipped")
+    elseif self.state.pendingChoices and #self.state.pendingChoices > 0 and not self.state.choiceMode then
+        self.state.activeChoices = self.state.pendingChoices
+        self.state.choiceMode = true
+        self.state.selectedChoice = 1
     elseif line.isEnd then self:endDialogue()
     else self.state.currentLineIndex = self.state.currentLineIndex + 1; self:processCurrentLine() end
 end
