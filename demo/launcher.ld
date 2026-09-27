@@ -13,6 +13,15 @@
 
 [start]
 Miisan: (Happy) Welcome to thek LoveDialogue Engine Hub!
+: Here are new features
+: As you can see, I dont need a character to talk
+: Also you can swap to any background you like
+[bg: demo/assets/bg/pic1.jpg]
+: Like this
+[bg: demo/assets/bg/pic2.jpg]
+: This
+[bg: demo/assets/bg/pic3.jpg]
+: AND THIS!!
 Miisan: (Happy) Select a demo to see specific features in action.
 
 -> Full Story Demo (Logic, Choices, Atlas) [target:load_story]

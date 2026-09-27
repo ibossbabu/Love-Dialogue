@@ -131,6 +131,19 @@ nine_patch_scale: 2
 typing_speed: 0.04
 ```
 
+## What's new Ibossbabu's patch
+- **Fixed:** dialogue line that were placed above chioces is no longer skip
+- **New:** `[bg: path]` directive — set/switch the background image at any point in a script
+- **New:** narrator lines — write `: text` with no character name for plain narration (no name, no portrait)
+
+`.ld` Background support for Visual Novel, narrator line(no character needed)
+
+```
+: At the mall...
+[bg: assets/bg/mall.jpg]
+
+```
+
 ## Configuration Options
 
 | Option | Type | Default | Description |
