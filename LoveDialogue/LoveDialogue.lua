@@ -280,9 +280,16 @@ function LoveDialogue:processCurrentLine()
         self:playBGM(line.path, true)
         self.state.currentLineIndex = self.state.currentLineIndex + 1
         return self:processCurrentLine()
+
         
     elseif line.type == "stop_bgm" then
         self:stopBGM()
+        self.state.currentLineIndex = self.state.currentLineIndex + 1
+        return self:processCurrentLine()
+
+    elseif line.type == "bg" then
+        self:triggerPluginEvent("onSignal", "SetBackground", line.path)
+        if self.onSignal then self.onSignal("SetBackground", line.path) end
         self.state.currentLineIndex = self.state.currentLineIndex + 1
         return self:processCurrentLine()
         
@@ -618,14 +625,16 @@ function LoveDialogue:endDialogue()
 end
 
 function LoveDialogue:adjustLayout()
-    local w, h = love.graphics.getDimensions()
-    self.config.boxHeight = math.floor(h * 0.25)
-    self.config.padding = math.floor(w * 0.02)
-    local fontSize = math.floor(h * 0.025)
-    self.resources.font = ResourceManager:getFont(self.instanceId, fontSize, nil, "main_font")
-    self.resources.nameFont = ResourceManager:getFont(self.instanceId, math.floor(h * 0.03), nil, "name_font")
-    self.config.lineSpacing = math.floor(self.resources.font:getHeight() * 1.5)
-    if self.config.ninePatchPath then self:loadNinePatch() end
+local w, h = love.graphics.getDimensions()
+self.config.boxWidth = math.floor(w * 0.70)
+self.config.boxHeight = math.floor(h * 0.2)
+self.config.padding = math.floor(w * 0.02)
+self.config.portraitSize = math.floor(h * 0.12)
+local fontSize = math.floor(h * 0.025)
+self.resources.font = ResourceManager:getFont(self.instanceId, fontSize, nil, "main_font")
+self.resources.nameFont = ResourceManager:getFont(self.instanceId, math.floor(h * 0.03), nil, "name_font")
+self.config.lineSpacing = math.floor(self.resources.font:getHeight() * 1.5)
+if self.config.ninePatchPath then self:loadNinePatch() end
 end
 
 function LoveDialogue.play(file, conf)

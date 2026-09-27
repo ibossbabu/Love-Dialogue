@@ -132,6 +132,11 @@ function Parser.parseFile(path, instanceId)
             elseif clean:match('^%[stop_bgm%]') then
                 table.insert(lines, { type = "stop_bgm" })
 
+            -- NEW: Background image
+            elseif clean:match('^%[bg:.+%]$') then
+                local path = clean:match('^%[bg:%s*(.+)%]$')
+                table.insert(lines, { type = "bg", path = path })
+
             -- NEW: Fade
             elseif clean:match('^%[fade:.+%]$') then
                 local content = clean:match('^%[fade:%s*(.+)%]$')
@@ -174,14 +179,20 @@ function Parser.parseFile(path, instanceId)
                 local name, expr, text
                 name, expr, text = clean:match('^(%S-)(%b()):%s*(.+)$')
                 if expr then expr = expr:sub(2, -2) end
-                if not name then
-                    local tName, tExpr, tText = clean:match('^(%S+):%s*(%b())%s*(.+)$')
-                    if tName and tExpr and tText then name = tName; expr = tExpr:sub(2, -2); text = tText end
-                end
-                if not name then name, text = clean:match('^(%S+):%s*(.+)$') end
-                
-                if name then
-                    if not chars[name] then chars[name] = Character.new(name, instanceId) end
+                    if not name then
+                        local tName, tExpr, tText = clean:match('^(%S+):%s*(%b())%s*(.+)$')
+                        if tName and tExpr and tText then name = tName; expr = tExpr:sub(2, -2); text = tText end
+                            end
+                            if not name then name, text = clean:match('^(%S+):%s*(.+)$') end
+
+                                -- NEW: narration line, no character — syntax: ": text"
+                                if not name and clean:sub(1, 1) == ':' then
+                                    name = ""
+                                    text = clean:sub(2):match('^%s*(.-)%s*$')
+                                    end
+
+                                    if name then
+                                        if name ~= "" and not chars[name] then chars[name] = Character.new(name, instanceId) end
                     local isEnd = text:match('%s*%(end%)$')
                     if isEnd then text = text:gsub('%s*%(end%)$', "") end
                     local pText, eff = parseEffects(text)
